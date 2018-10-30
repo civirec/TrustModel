@@ -7,10 +7,10 @@ K = 300
 H = 2 * K
 D_out = Params.MOVIE_NUM
 LR = 0.001
-regularWeight = 0.01
+regularWeight = 0.005
 
 
-BATCH_SIZE = 32
+BATCH_SIZE = 256
 
 EPOCH = 100
 

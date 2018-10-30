@@ -16,8 +16,9 @@ class TrustNet(nn.Module):
         self.inputRating = nn.Linear(D_in1, K)
         #self.inputTrust = nn.Linear(D_in2, K)
         #TODO 
-        self.inputTrust = nn.Linear(40163, K)
-        self.out = nn.Linear(2 * K, D_out)
+        self.inputTruster = nn.Linear(D_in2, K) #信任
+        self.inputTrustee = nn.Linear(D_in2, K)#受信任
+        self.out = nn.Linear(3 * K, D_out)
 
         # self.model = nn.Sequential(
         #     nn.Linear(inDim, hideDim, bias=False),
@@ -25,9 +26,10 @@ class TrustNet(nn.Module):
         #     nn.Linear(hideDim, outDim, bias=False),
         # )
         
-    def forward(self, rating, trust):
+    def forward(self, rating, truster, trustee):
         x1 = t.sigmoid(self.inputRating(rating))
-        x2 = t.sigmoid(self.inputTrust(trust))
-        x = t.cat((x1, x2), dim=1) #列方向连接
+        x2 = t.sigmoid(self.inputTruster(truster))
+        x3 = t.sigmoid(self.inputTrustee(trustee))
+        x = t.cat((x1, x2, x3), dim=1) #列方向连接
         y_pred = self.out(x)
         return y_pred

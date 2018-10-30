@@ -56,6 +56,7 @@ class MyModel():
         self.testMat = test
         self.cvMat = cv
         self.trustMat = trust
+        self.trusteeMat = trust.transpose()
 
         self.trainMask = trainMat != 0
         self.cvMask = cvMat != 0
@@ -77,11 +78,12 @@ class MyModel():
         self.test_RMSEs   = []
 
     def run(self):
+        #判断是导入模型还是重新训练模型
         if self.isLoadModel == True:
             self.loadModel(LOAD_MODEL_PATH)
         for e in range(self.curEpoch, EPOCH+1):
             #训练
-            epoch_loss, epoch_rmse = self.trainModel(self.trainMat, self.trustMat, self.trainMask, self.optimizer)
+            epoch_loss, epoch_rmse = self.trainModel(self.trainMat, self.trustMat, self.trusteeMat, self.trainMask, self.optimizer)
             regularLoss = self.getRegularLoss(self.model)
             log("\n")
             log("epoch %d/%d, epoch_loss=%.2f, epoch_rmse=%.4f"%(e,EPOCH, epoch_loss, epoch_rmse))
@@ -91,7 +93,7 @@ class MyModel():
             log('W1_Loss = %.2f, W2_Loss = %.2f, W3_Loss = %.2f'%(regularLoss[0], regularLoss[1], regularLoss[2]))
 
             #交叉验证
-            cv_epoch_loss, cv_epoch_rmse = self.testModel(self.trainMat, self.trustMat, self.cvMat, self.cvMask, 5)
+            cv_epoch_loss, cv_epoch_rmse = self.testModel(self.trainMat, self.trustMat, self.trusteeMat, self.cvMat, self.cvMask, 5)
             log("\n")
             log("epoch %d/%d, cv_epoch_loss=%.2f, cv_epoch_rmse=%f"%(e, EPOCH, cv_epoch_loss, cv_epoch_rmse))
             self.test_losses.append(cv_epoch_loss)
@@ -105,7 +107,7 @@ class MyModel():
                 self.saveModel()
                
         #测试
-        test_epoch_loss, test_epoch_rmse = self.testModel(self.trainMat, self.trustMat, self.testMat, self.testMask)
+        test_epoch_loss, test_epoch_rmse = self.testModel(self.trainMat, self.trustMat, self.trusteeMat, self.testMat, self.testMask)
         log("\n")
         log("test_rmse=%f"%(test_epoch_rmse))
 
@@ -138,7 +140,7 @@ class MyModel():
 
 
 
-    def trainModel(self, trainMat, trustMat, trainMask, op):
+    def trainModel(self, trainMat, trustMat, trusteeMat, trainMask, op):
         num = trainMat.shape[0]
         shuffledIds = np.random.permutation(num)
         steps = int(np.ceil(num / BATCH_SIZE))
@@ -151,14 +153,16 @@ class MyModel():
             cur_batch_size = len(batch_ids)
             tmpTrain  = trainMat[batch_ids].toarray()
             tmpTrust  = trustMat[batch_ids].toarray()
+            tmpTrustee = trusteeMat[batch_ids].toarray()
             #fakeTrust = np.zeros_like(tmpTrust)
             tmpMask   = trainMask[batch_ids].toarray()
 
             train = t.from_numpy(tmpTrain).float().to(device)
             trust = t.from_numpy(tmpTrust).float().to(device)
+            trustee = t.from_numpy(tmpTrustee).float().to(device)
             mask = t.from_numpy(1*tmpMask).float().to(device) #将bool转为int,否则会报错
 
-            y_pred = self.model(train, trust)
+            y_pred = self.model(train, trust, trustee)
             #loss = self.loss(y_pred * mask, train)
 
             loss = self.loss_rmse(y_pred*mask, train)/cur_batch_size
@@ -185,7 +189,7 @@ class MyModel():
         #epoch_loss = epoch_loss / steps
         return epoch_loss, epoch_rmse
 
-    def testModel(self, trainMat, trustMat, testLabel, testMask, div=1):
+    def testModel(self, trainMat, trustMat, trusteeMat, testLabel, testMask, div=1):
         shuffledIds = np.random.permutation(trainMat.shape[0])
         steps = int(np.ceil(trainMat.shape[0] /(BATCH_SIZE * div)))
         epoch_loss = 0
@@ -197,16 +201,18 @@ class MyModel():
             cur_batch_size = len(batch_ids)
             tmpTrain = trainMat[batch_ids].toarray()
             tmpTrust = trustMat[batch_ids].toarray()
+            tmpTrustee = trusteeMat[batch_ids].toarray()
             #fakeTrust = np.zeros_like(tmpTrust)
             tmpLabel = testLabel[batch_ids].toarray()
             tmpMask = testMask[batch_ids].toarray()
             
             train = t.from_numpy(tmpTrain).float().to(device)
             trust = t.from_numpy(tmpTrust).float().to(device)
+            trustee = t.from_numpy(tmpTrustee).float().to(device)
             label = t.from_numpy(tmpLabel).float().to(device)
             mask = t.from_numpy(1*tmpMask).float().to(device) #将bool转为int,否则会报错
 
-            y_pred = self.model(train, trust)
+            y_pred = self.model(train, trust, trustee)
 
             loss = self.loss_rmse(y_pred * mask, label)/cur_batch_size
 
