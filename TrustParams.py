@@ -1,13 +1,15 @@
 import Params
 import datetime
 
+
 D_in1 = Params.MOVIE_NUM
 D_in2 = Params.USER_NUM
 K = 300
 H = 2 * K
 D_out = Params.MOVIE_NUM
-LR = 0.001
+LR = 0.0001
 regularWeight = 0.005
+LR_DECAY = 0.98
 
 
 BATCH_SIZE = 256
@@ -26,7 +28,7 @@ for param in dir():
 
 
 #load model
-_ModelName = '29441437673_regWeight_0.001_BATCH_32_LATENT_DIM300'
+_ModelName = ''
 
 LOAD_MODEL_PATH = r'./' + Params.dataset + r'/Model/' + _ModelName + r'.pth'
 

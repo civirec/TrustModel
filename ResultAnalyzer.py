@@ -12,21 +12,34 @@ lines = ['-', '--', '-.', ':']
 
 
 sets = [
-	'59095975973_regWeight_0_BATCH_32_LATENT_DIM300',
-	'29441437673_regWeight_0.001_BATCH_32_LATENT_DIM300',
-	'4213486598_regWeight_0.005_BATCH_32_LATENT_DIM300'
+	#'59095975973_regWeight_0_BATCH_32_LATENT_DIM300',
+	#'29441437673_regWeight_0.001_BATCH_32_LATENT_DIM300',
+	#'4213486598_regWeight_0.005_BATCH_32_LATENT_DIM300',
+	#'8684693862_regWeight_0.01_BATCH_32_LATENT_DIM300',
+	#'10655605038_regWeight_0.005_BATCH_32_LATENT_DIM300',
+	#'17324202491_regWeight_0.005_BATCH_256_LATENT_DIM300',
+	#'83389457144_regWeight_0.005_BATCH_256_LATENT_DIM300',
+	'49266445674_regWeight_0.005_BATCH_256_LATENT_DIM300_LR0.0001_LR_DACAY0.97',
+	'28752744673_regWeight_0.005_BATCH_256_LATENT_DIM300_LR0.0005_LR_DACAY0.98'
 ]
 names = [
-	'0',
-	'0.001',#1.925825
-	'0.005',#1.850841
+	#'0',
+	#'0.001',#1.925825
+	#'0.005',#1.850841
+	#'0.01',
+	#'0.005-new',
+	#'0.005-new-256',
+	#'DECAY_0.97',
+	'hope',
+	'0.0005-0.98'
+
 ]
 
 
 
 smooth = 1
 startLoc = 1
-Length = 150
+Length = 100
 for j in range(len(sets)):
 	val = sets[j]
 	name = names[j]

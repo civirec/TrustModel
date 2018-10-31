@@ -99,7 +99,7 @@ class MyModel():
             self.test_losses.append(cv_epoch_loss)
             self.test_RMSEs.append(cv_epoch_rmse)
 
-            #调整学习率
+            #每一个Epoch调整学习率
             self.adjust_learning_rate(self.optimizer, e)
             #记录当前epoch,用于保存Model
             self.curEpoch = e
@@ -127,7 +127,8 @@ class MyModel():
 
     def adjust_learning_rate(self, optimizer, epoch):
         """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
-        lr = self.learning_rate * (0.1 ** (epoch // 30))
+        lr = self.learning_rate * LR_DECAY
+        #lr = self.learning_rate * (0.1 ** (epoch // 30))
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
 
@@ -135,7 +136,9 @@ class MyModel():
         ModelName = str(hashval) + \
         "_regWeight_" + str(self.regWeight) + \
         "_BATCH_" + str(BATCH_SIZE) + \
-        "_LATENT_DIM" + str(K)
+        "_LATENT_DIM" + str(K) + \
+        "_LR" + str(LR) + \
+        "_LR_DACAY" + str(LR_DECAY)
         return ModelName
 
 

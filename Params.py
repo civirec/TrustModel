@@ -1,5 +1,6 @@
 # Data Parameters
-#dataset = 'ml-20m'
+
+#dataset = 'netflix'
 dataset = 'Epinions'
 RATE = 0.9
 
@@ -9,8 +10,8 @@ if dataset == 'ml-20m':
 	DIVIDER = ','
 	RATING = 'ratings.csv'
 elif dataset == 'ml-1m':
-	USER_NUM = 6040
-	MOVIE_NUM = 3706#4000#3706
+	USER_NUM = 60400
+	MOVIE_NUM = 37060#4000#3706
 	DIVIDER = '::'
 	RATING = 'ratings.dat'
 elif dataset == 'ml-10m':
